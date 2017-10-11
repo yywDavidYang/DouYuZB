@@ -20,6 +20,8 @@ class PageContentView: UIView {
     weak var parentViewController:UIViewController?// 可选链
     var startOffSetX:CGFloat = 0
     weak var delegate:PageContentViewDelegate?
+    var  isForbidScroll:Bool = false
+    
     // 创建UICollectionView
     // weak 只能修饰可选类型
     lazy var colletionView:UICollectionView = {[weak self] in
@@ -85,8 +87,10 @@ extension PageContentView:UICollectionViewDataSource {
 extension PageContentView:UICollectionViewDelegate{
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         startOffSetX = scrollView.contentOffset.x
+        isForbidScroll = false
     }
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if isForbidScroll {return}
         var progress:CGFloat = 0
         var sourceIndex = 0
         var targetIndex = 0
@@ -120,8 +124,12 @@ extension PageContentView:UICollectionViewDelegate{
         delegate?.pageContentView(contentView: self, progress: progress, sourceIndex: sourceIndex, targetIndex: targetIndex)
     }
 }
+
+
+
 extension PageContentView{
     func setCurrentIndex(currentSelectIndex:Int){
+        isForbidScroll = true
         let offsetX = CGFloat(currentSelectIndex) * colletionView.frame.width
      colletionView.setContentOffset(CGPoint.init(x: offsetX, y: 0), animated: false)
     }
