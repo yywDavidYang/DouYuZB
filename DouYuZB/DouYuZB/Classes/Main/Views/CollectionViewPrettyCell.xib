@@ -73,7 +73,13 @@
             </constraints>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <size key="customSize" width="143" height="156"/>
-            <point key="canvasLocation" x="-61.5" y="104"/>
+            <connections>
+                <outlet property="btnAddress" destination="YrT-Li-Iwa" id="iwm-RL-NOG"/>
+                <outlet property="itemImageView" destination="vo5-eh-edR" id="MQS-ur-oz4"/>
+                <outlet property="itemTitle" destination="Wwi-sK-xu6" id="3NI-6M-Efe"/>
+                <outlet property="labelOnlineNum" destination="car-MM-4cb" id="MNk-fD-jMv"/>
+            </connections>
+            <point key="canvasLocation" x="-37" y="85"/>
         </collectionViewCell>
     </objects>
     <resources>
