@@ -9,7 +9,7 @@
 import UIKit
 import Kingfisher
 
-class CollectionViewPrettyCell: UICollectionViewCell {
+class CollectionViewPrettyCell: HomeCollectionViewBaseCell {
 
     @IBOutlet weak var labelOnlineNum: UILabel!
     @IBOutlet weak var itemImageView: UIImageView!

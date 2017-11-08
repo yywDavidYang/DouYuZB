@@ -13,9 +13,31 @@ class RecommandViewModel {
     lazy var anchorGroups:[AnchorGroup] = [AnchorGroup]()
     var bigDataGroup:AnchorGroup = AnchorGroup()
     var prettyGroup:AnchorGroup = AnchorGroup()
+    var cycleModels:[HomeCycleModel] = [HomeCycleModel]()
+    
 }
 
 extension RecommandViewModel {
+    func requestCycleData(finishCallBack:@escaping ()->()) {
+        NetworkTool.requestData(type: .GET, url: "http://capi.douyucdn.cn/api/v1/slide/6?version=1.0") { (result) in
+            print("滚动数据=\(result)")
+            // 转成字典类型
+            guard let resultDic = result as? [String : NSObject] else {
+                return
+            }
+            // 转成数组类型
+            guard let dataArray = resultDic["data"] as? [[String : NSObject]] else {
+                return
+            }
+            for dic in dataArray{
+                let data = try! JSONSerialization.data(withJSONObject: dic, options: [])
+                let json = JSON(data: data)
+                let model = HomeCycleModel.init(json)
+                self.cycleModels.append(model)
+            }
+            finishCallBack()
+        }
+    }
     func requestData(finishCallBack:@escaping ()->()){
         //1.部分推荐数据
         // 创建一个group
@@ -65,9 +87,9 @@ extension RecommandViewModel {
                 let model = AnchorModel.init(json)
                 self.prettyGroup.room_list.append(model)
             }
-            for model in self.prettyGroup.room_list{
-                print(model.nickname as Any)
-            }
+//            for model in self.prettyGroup.room_list{
+//                print(model.nickname as Any)
+//            }
             disGroup.leave()
         }
         

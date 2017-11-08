@@ -12,14 +12,27 @@ private let kItemMargin : CGFloat = 10
 private let kItemW : CGFloat = (kScreenW - 3 * 10)/2
 private let kItemH : CGFloat = kItemW * 3 / 4
 private let kPrettyItemH:CGFloat = kItemW * 4 / 3
-private let kHeaderH : CGFloat = 50
+private let kHeaderH : CGFloat  = 50
+private let KCycleViewH:CGFloat = kScreenW * 3 / 8.0
+private let KGameViewH:CGFloat  = 90
 private let kNormalCellID  = "kNormalCellID"
 private let kPrettyCellID  = "kPrettyCellID"
 private let kHeaderViewID  = "kHeaderViewID"
 
 
 class RecommandViewController: UIViewController {
-     lazy var recommandViewModel:RecommandViewModel = RecommandViewModel()
+    private lazy var recommandViewModel:RecommandViewModel = RecommandViewModel()
+    private lazy var cycleView:RecommendCycleView = {
+        let cycleView = RecommendCycleView.recommandCycleView()
+        cycleView.frame = CGRect(x: 0, y: -(KCycleViewH + KGameViewH), width: kScreenW, height: KCycleViewH)
+        return cycleView
+    }()
+    
+    private lazy var gameView:RecommendGameView = {
+        let gameView = RecommendGameView.recommandGameView()
+        gameView.frame = CGRect(x: 0, y: -KGameViewH, width: kScreenW, height: KGameViewH)
+        return gameView
+    }()
     // 懒加载
     private lazy var reCollectionView:UICollectionView = {[weak self] in
         let flowLayout = UICollectionViewFlowLayout()
@@ -52,15 +65,29 @@ extension RecommandViewController{
     private func setupUI(){
         // 添加collectionView
         view.addSubview(reCollectionView)
+        reCollectionView.addSubview(cycleView)
+        
+        reCollectionView.addSubview(gameView)
+        // 设置内边距
+        reCollectionView.contentInset = UIEdgeInsets(top: KCycleViewH + KGameViewH, left: 0, bottom: 0, right: 0)
+        
     }
 }
 
 // Mark - 网络请求
 extension RecommandViewController{
     private func loadData(){
+        // 请求collection中的数据
         recommandViewModel.requestData(finishCallBack: {
             self.reCollectionView.reloadData()
+            self.gameView.groups = self.recommandViewModel.anchorGroups
         })
+        
+        // 请求头部滚动视图的数据
+        recommandViewModel.requestCycleData {
+            print("滚动视图的数据请求")
+            self.cycleView.cycleModels = self.recommandViewModel.cycleModels
+        }
     }
 }
 
@@ -86,7 +113,6 @@ extension RecommandViewController:UICollectionViewDataSource,UICollectionViewDel
             cell.anchor = anchor
             return cell
         }
-        
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
